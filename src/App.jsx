@@ -9,6 +9,7 @@ import PinInput from './components/PinInput'
 import TransactionDetails from './components/TransactionDetails'
 import TransactionHistory from './components/TransactionHistory'
 import TransferModal from './components/TransferModal'
+import ReceiveModal from './components/ReceiveModal'
 
 // UI Components (adapted for React)
 function Card({ children, className = "" }) {
@@ -98,10 +99,17 @@ const User = ({ className }) => (
 
 function IndexPage() {
   const [showTransfer, setShowTransfer] = useState(false)
+  const [showReceive, setShowReceive] = useState(false)
   const [showHistory, setShowHistory] = useState(false)
   const [selectedTransaction, setSelectedTransaction] = useState(null)
   const [showESlip, setShowESlip] = useState(false)
   const [eSlipTransaction, setESlipTransaction] = useState(null)
+
+  // User data for receive modal
+  const userData = {
+    name: "John Doe",
+    payTag: "@john_doe"
+  }
 
   // Convert transactions to state
   const [transactions, setTransactions] = useState([
@@ -215,8 +223,18 @@ function IndexPage() {
                 Send Money
               </Button>
               <Button
-                onClick={() => setShowHistory(true)}
+                onClick={() => setShowReceive(true)}
                 className="btn-secondary flex-1 h-12"
+                style={{ borderRadius: 'var(--radius-lg)' }}
+              >
+                <ArrowDownLeft className="h-4 w-4 mr-2" />
+                Receive Money
+              </Button>
+            </div>
+            <div className="flex gap-3 mt-3">
+              <Button
+                onClick={() => setShowHistory(true)}
+                className="btn-secondary w-full h-12"
                 style={{ borderRadius: 'var(--radius-lg)' }}
               >
                 <History className="h-4 w-4 mr-2" />
@@ -229,7 +247,7 @@ function IndexPage() {
         {/* Quick Actions */}
         <div className="bg-white rounded-xl card-shadow p-6">
           <h3 className="text-lg font-semibold mb-4" style={{ color: 'var(--color-neutral-900)' }}>Quick Actions</h3>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-3 gap-4">
             <button
               className="flex flex-col items-center gap-3 p-6 rounded-lg transition-colors duration-200"
               style={{ 
@@ -248,6 +266,25 @@ function IndexPage() {
             >
               <ArrowUpRight className="h-8 w-8" style={{ color: 'var(--color-web-green-600)' }} />
               <span className="text-sm font-medium" style={{ color: 'var(--color-neutral-700)' }}>Send Money</span>
+            </button>
+            <button
+              className="flex flex-col items-center gap-3 p-6 rounded-lg transition-colors duration-200"
+              style={{ 
+                border: '2px solid var(--color-neutral-200)',
+                borderRadius: 'var(--radius-lg)'
+              }}
+              onMouseOver={(e) => {
+                e.target.style.borderColor = 'var(--color-web-green-300)'
+                e.target.style.backgroundColor = 'var(--color-web-green-50)'
+              }}
+              onMouseOut={(e) => {
+                e.target.style.borderColor = 'var(--color-neutral-200)'
+                e.target.style.backgroundColor = 'transparent'
+              }}
+              onClick={() => setShowReceive(true)}
+            >
+              <ArrowDownLeft className="h-8 w-8" style={{ color: 'var(--color-web-green-600)' }} />
+              <span className="text-sm font-medium" style={{ color: 'var(--color-neutral-700)' }}>Receive Money</span>
             </button>
             <button
               className="flex flex-col items-center gap-3 p-6 rounded-lg transition-colors duration-200"
@@ -343,6 +380,14 @@ function IndexPage() {
         onOpenChange={setShowTransfer}
         onTransfer={handleNewTransfer}
         currentBalance={balance}
+      />
+
+      {/* Receive Money Modal */}
+      <ReceiveModal
+        open={showReceive}
+        onOpenChange={setShowReceive}
+        userPayTag={userData.payTag}
+        userName={userData.name}
       />
 
       {/* Use TransactionHistory component instead of basic modal */}
