@@ -1,0 +1,17 @@
+/* App-specific styles that complement Tailwind */
+/* You can add any component-specific styles here that aren't easily expressed with Tailwind utilities */
+
+/* Example: Custom animations or complex component styles */
+@keyframes bounce-subtle {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+.bounce-subtle {
+  animation: bounce-subtle 2s infinite;
+}
