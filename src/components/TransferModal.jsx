@@ -116,6 +116,12 @@ const CheckCircle = ({ className }) => (
   </svg>
 )
 
+const X = ({ className }) => (
+  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+  </svg>
+)
+
 function TransferModal({ open, onOpenChange, onTransfer, currentBalance }) {
   const [step, setStep] = useState("form")
   const [payTag, setPayTag] = useState("")
@@ -216,12 +222,30 @@ function TransferModal({ open, onOpenChange, onTransfer, currentBalance }) {
     onOpenChange(false)
   }
 
+  // Handle clicking outside the modal
+  const handleBackdropClick = (e) => {
+    if (e.target === e.currentTarget) {
+      handleClose()
+    }
+  }
+
   if (!open) return null
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg p-6 max-w-md w-full max-h-[90vh] overflow-y-auto">
-        <div className="mb-4">
+    <div 
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+      onClick={handleBackdropClick}
+    >
+      <div className="bg-white rounded-lg p-6 max-w-md w-full max-h-[90vh] overflow-y-auto relative">
+        {/* Close button in header */}
+        <button
+          onClick={handleClose}
+          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+        >
+          <X className="h-6 w-6" />
+        </button>
+        
+        <div className="mb-4 pr-8">
           <h2 className="text-xl font-bold text-emerald-700">
             {step === "form" && "Send Money"}
             {step === "confirm" && "Confirm Transfer"}
