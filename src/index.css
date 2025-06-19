@@ -1,5 +1,96 @@
 @import "tailwindcss";
 
+@theme {
+  /* 
+    Brand Colors 
+    Extracted from the website UI. The primary brand color is a vibrant green.
+  */
+  --color-web-green-50: #e6f6ee;
+  --color-web-green-100: #bcf0d8;
+  --color-web-green-200: #8ce9c1;
+  --color-web-green-300: #5ce3aa;
+  --color-web-green-400: #2bdb93;
+  --color-web-green-500: #00A950;  /* Main Green (Buttons, Active states) */
+  --color-web-green-600: #009947;  /* Darker Green (Header) */
+  --color-web-green-700: #00803c;
+  --color-web-green-800: #006630;
+  --color-web-green-900: #004d24;
+  
+  /* 
+    Functional Colors 
+    Standard colors for UI states like success, error, etc.
+  */
+  --color-success: var(--color-web-green-500); /* Use brand color for success */
+  --color-warning: #F59E0B;
+  --color-error: #EF4444;
+  --color-info: #3B82F6;
+  
+  /* 
+    Neutral & Grayscale Colors 
+    Used for text, backgrounds, and borders.
+  */
+  --color-white: #FFFFFF;
+  --color-neutral-50: #F5F7F8;    /* Page Background */
+  --color-neutral-100: #F3F4F6;
+  --color-neutral-200: #E5E7EB;   /* Borders and Dividers */
+  --color-neutral-300: #D1D5DB;
+  --color-neutral-400: #9CA3AF;
+  --color-neutral-500: #6B7280;   /* Secondary Text */
+  --color-neutral-600: #4B5563;
+  --color-neutral-700: #374151;   /* Primary Body Text */
+  --color-neutral-800: #333D47;   /* Footer Background */
+  --color-neutral-900: #111827;   /* Darkest Text */
+
+  /* 
+    Spacing & Sizing
+    A consistent spacing scale for margins, paddings, and layout.
+  */
+  --spacing-1: 0.25rem;  /* 4px */
+  --spacing-2: 0.5rem;   /* 8px */
+  --spacing-3: 0.75rem;  /* 12px */
+  --spacing-4: 1rem;     /* 16px */
+  --spacing-5: 1.25rem;  /* 20px */
+  --spacing-6: 1.5rem;   /* 24px */
+  --spacing-8: 2rem;     /* 32px */
+  --spacing-10: 2.5rem;  /* 40px */
+  --spacing-12: 3rem;    /* 48px */
+  --spacing-16: 4rem;    /* 64px */
+  --spacing-24: 6rem;    /* 96px */
+
+  /* 
+    Typography 
+    A scale for font sizes to maintain consistency.
+  */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.875rem;
+  --text-4xl: 2.25rem;
+  --text-5xl: 3rem;
+  
+  /* 
+    Border Radius
+    Used for rounding corners of buttons, cards, and other elements.
+  */
+  --radius-sm: 0.25rem;    /* 4px */
+  --radius-md: 0.5rem;     /* 8px, used for buttons and cards */
+  --radius-lg: 0.75rem;    /* 12px, for larger cards */
+  --radius-xl: 1rem;       /* 16px */
+  --radius-full: 9999px;   /* For circular elements */
+  
+  /* 
+    Box Shadow
+    To create depth and elevation for elements like cards.
+  */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.07), 0 1px 2px -1px rgb(0 0 0 / 0.07); /* A subtle shadow for cards */
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
 /* Custom base styles that work well with Tailwind */
 @layer base {
   html {
@@ -7,7 +98,7 @@
   }
   
   body {
-    @apply m-0 min-h-screen;
+    @apply m-0 min-h-screen bg-neutral-50;
   }
   
   * {
@@ -15,17 +106,45 @@
   }
 }
 
-/* Custom component styles */
+/* Custom component styles using the new theme */
 @layer components {
   .btn-primary {
-    @apply bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2;
+    @apply font-medium py-2 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2;
+    background-color: var(--color-web-green-500);
+    color: var(--color-white);
+    box-shadow: var(--shadow);
+  }
+  
+  .btn-primary:hover {
+    background-color: var(--color-web-green-600);
+  }
+  
+  .btn-primary:focus {
+    --tw-ring-color: var(--color-web-green-500);
   }
   
   .btn-secondary {
-    @apply border-2 border-purple-600 text-purple-600 hover:bg-purple-600 hover:text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2;
+    @apply font-medium py-2 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2;
+    border: 2px solid var(--color-web-green-500);
+    color: var(--color-web-green-600);
+    background-color: var(--color-white);
+  }
+  
+  .btn-secondary:hover {
+    background-color: var(--color-web-green-500);
+    color: var(--color-white);
+  }
+  
+  .btn-secondary:focus {
+    --tw-ring-color: var(--color-web-green-500);
+  }
+  
+  .card-shadow {
+    box-shadow: var(--shadow-lg);
   }
   
   .gradient-text {
-    @apply text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-purple-800;
+    @apply text-transparent bg-clip-text;
+    background-image: linear-gradient(to right, var(--color-web-green-600), var(--color-web-green-800));
   }
 }

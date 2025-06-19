@@ -166,40 +166,41 @@ function IndexPage() {
   }
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#f0fdf4' }}>
+    <div className="min-h-screen" style={{ backgroundColor: 'var(--color-neutral-50)' }}>
       {/* Header */}
-      <div className="bg-emerald-600 text-white px-6 py-8">
+      <div className="text-white px-6 py-8" style={{ backgroundColor: 'var(--color-web-green-600)' }}>
         <div className="max-w-md mx-auto">
           <h1 className="text-2xl font-bold mb-1">PayWise</h1>
-          <p className="text-emerald-100 text-sm">Fast, Simple & Secure P2P Transfers</p>
+          <p className="text-sm" style={{ color: 'var(--color-web-green-100)' }}>Fast, Simple & Secure P2P Transfers</p>
         </div>
       </div>
 
       <div className="max-w-md mx-auto px-4 -mt-4 space-y-4">
         {/* Balance Card */}
-        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-          <div className="bg-emerald-500 text-white px-6 py-4">
+        <div className="bg-white rounded-xl card-shadow overflow-hidden">
+          <div className="text-white px-6 py-4" style={{ backgroundColor: 'var(--color-web-green-500)' }}>
             <div className="flex items-center gap-2">
               <CreditCard className="h-5 w-5" />
               <span className="font-medium">Account Balance</span>
             </div>
           </div>
           <div className="px-6 py-6">
-            <div className="text-3xl font-bold text-gray-900 mb-6">
+            <div className="text-3xl font-bold mb-6" style={{ color: 'var(--color-neutral-900)' }}>
               ฿{balance.toLocaleString("en-US", { minimumFractionDigits: 2 })}
             </div>
             <div className="flex gap-3">
               <Button 
                 onClick={() => setShowTransfer(true)} 
-                className="bg-emerald-500 hover:bg-emerald-600 text-white flex-1 h-12 rounded-lg font-medium"
+                className="btn-primary flex-1 h-12"
+                style={{ borderRadius: 'var(--radius-lg)' }}
               >
                 <Plus className="h-4 w-4 mr-2" />
                 Send Money
               </Button>
               <Button
-                variant="outline"
                 onClick={() => setShowHistory(true)}
-                className="border-2 border-emerald-500 text-emerald-600 hover:bg-emerald-50 flex-1 h-12 rounded-lg font-medium"
+                className="btn-secondary flex-1 h-12"
+                style={{ borderRadius: 'var(--radius-lg)' }}
               >
                 <History className="h-4 w-4 mr-2" />
                 View History
@@ -209,33 +210,60 @@ function IndexPage() {
         </div>
 
         {/* Quick Actions */}
-        <div className="bg-white rounded-xl shadow-lg p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
+        <div className="bg-white rounded-xl card-shadow p-6">
+          <h3 className="text-lg font-semibold mb-4" style={{ color: 'var(--color-neutral-900)' }}>Quick Actions</h3>
           <div className="grid grid-cols-2 gap-4">
             <button
-              className="flex flex-col items-center gap-3 p-6 border-2 border-gray-200 rounded-lg hover:border-emerald-300 hover:bg-emerald-50 transition-colors"
+              className="flex flex-col items-center gap-3 p-6 rounded-lg transition-colors duration-200"
+              style={{ 
+                border: '2px solid var(--color-neutral-200)',
+                borderRadius: 'var(--radius-lg)'
+              }}
+              onMouseOver={(e) => {
+                e.target.style.borderColor = 'var(--color-web-green-300)'
+                e.target.style.backgroundColor = 'var(--color-web-green-50)'
+              }}
+              onMouseOut={(e) => {
+                e.target.style.borderColor = 'var(--color-neutral-200)'
+                e.target.style.backgroundColor = 'transparent'
+              }}
               onClick={() => setShowTransfer(true)}
             >
-              <ArrowUpRight className="h-8 w-8 text-emerald-600" />
-              <span className="text-sm font-medium text-gray-700">Send Money</span>
+              <ArrowUpRight className="h-8 w-8" style={{ color: 'var(--color-web-green-600)' }} />
+              <span className="text-sm font-medium" style={{ color: 'var(--color-neutral-700)' }}>Send Money</span>
             </button>
             <button
-              className="flex flex-col items-center gap-3 p-6 border-2 border-gray-200 rounded-lg hover:border-emerald-300 hover:bg-emerald-50 transition-colors"
+              className="flex flex-col items-center gap-3 p-6 rounded-lg transition-colors duration-200"
+              style={{ 
+                border: '2px solid var(--color-neutral-200)',
+                borderRadius: 'var(--radius-lg)'
+              }}
+              onMouseOver={(e) => {
+                e.target.style.borderColor = 'var(--color-web-green-300)'
+                e.target.style.backgroundColor = 'var(--color-web-green-50)'
+              }}
+              onMouseOut={(e) => {
+                e.target.style.borderColor = 'var(--color-neutral-200)'
+                e.target.style.backgroundColor = 'transparent'
+              }}
               onClick={() => setShowHistory(true)}
             >
-              <Eye className="h-8 w-8 text-emerald-600" />
-              <span className="text-sm font-medium text-gray-700">Transaction History</span>
+              <Eye className="h-8 w-8" style={{ color: 'var(--color-web-green-600)' }} />
+              <span className="text-sm font-medium" style={{ color: 'var(--color-neutral-700)' }}>Transaction History</span>
             </button>
           </div>
         </div>
 
         {/* Recent Transactions */}
-        <div className="bg-white rounded-xl shadow-lg p-6">
+        <div className="bg-white rounded-xl card-shadow p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-900">Recent Transactions</h3>
+            <h3 className="text-lg font-semibold" style={{ color: 'var(--color-neutral-900)' }}>Recent Transactions</h3>
             <button
               onClick={() => setShowHistory(true)}
-              className="text-emerald-600 text-sm font-medium hover:text-emerald-700"
+              className="text-sm font-medium transition-colors duration-200"
+              style={{ color: 'var(--color-web-green-600)' }}
+              onMouseOver={(e) => e.target.style.color = 'var(--color-web-green-700)'}
+              onMouseOut={(e) => e.target.style.color = 'var(--color-web-green-600)'}
             >
               View All
             </button>
@@ -244,39 +272,47 @@ function IndexPage() {
             {recentTransactions.map((transaction) => (
               <div
                 key={transaction.id}
-                className="flex items-center justify-between p-4 rounded-lg border border-gray-100 hover:bg-gray-50 cursor-pointer transition-colors"
+                className="flex items-center justify-between p-4 rounded-lg cursor-pointer transition-colors duration-200"
+                style={{ 
+                  border: '1px solid var(--color-neutral-200)',
+                  borderRadius: 'var(--radius-lg)'
+                }}
+                onMouseOver={(e) => e.target.style.backgroundColor = 'var(--color-neutral-100)'}
+                onMouseOut={(e) => e.target.style.backgroundColor = 'transparent'}
                 onClick={() => handleTransactionClick(transaction)}
               >
                 <div className="flex items-center gap-3">
                   <div
-                    className={`p-2 rounded-full ${
-                      transaction.type === "sent" 
-                        ? "bg-red-100" 
-                        : "bg-green-100"
-                    }`}
+                    className="p-2 rounded-full"
+                    style={{ 
+                      backgroundColor: transaction.type === "sent" 
+                        ? 'var(--color-error)' + '20' 
+                        : 'var(--color-success)' + '20'
+                    }}
                   >
                     {transaction.type === "sent" ? (
-                      <ArrowUpRight className="h-4 w-4 text-red-600" />
+                      <ArrowUpRight className="h-4 w-4" style={{ color: 'var(--color-error)' }} />
                     ) : (
-                      <ArrowDownLeft className="h-4 w-4 text-green-600" />
+                      <ArrowDownLeft className="h-4 w-4" style={{ color: 'var(--color-success)' }} />
                     )}
                   </div>
                   <div>
-                    <div className="font-medium text-gray-900">{transaction.recipient}</div>
-                    <div className="text-sm text-gray-500">{transaction.payTag}</div>
-                    {transaction.memo && <div className="text-xs text-gray-400">{transaction.memo}</div>}
+                    <div className="font-medium" style={{ color: 'var(--color-neutral-900)' }}>{transaction.recipient}</div>
+                    <div className="text-sm" style={{ color: 'var(--color-neutral-500)' }}>{transaction.payTag}</div>
+                    {transaction.memo && <div className="text-xs" style={{ color: 'var(--color-neutral-400)' }}>{transaction.memo}</div>}
                   </div>
                 </div>
                 <div className="text-right">
                   <div
-                    className={`font-semibold ${
-                      transaction.type === "sent" ? "text-red-600" : "text-green-600"
-                    }`}
+                    className="font-semibold"
+                    style={{
+                      color: transaction.type === "sent" ? 'var(--color-error)' : 'var(--color-success)'
+                    }}
                   >
                     {transaction.type === "sent" ? "-" : "+"}฿
                     {transaction.amount.toLocaleString("en-US", { minimumFractionDigits: 2 })}
                   </div>
-                  <div className="text-xs text-gray-500">{transaction.date}</div>
+                  <div className="text-xs" style={{ color: 'var(--color-neutral-500)' }}>{transaction.date}</div>
                 </div>
               </div>
             ))}
