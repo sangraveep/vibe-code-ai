@@ -3,6 +3,7 @@ import { useState } from 'react'
 import './App.css'
 import RootLayout from './components/RootLayout'
 import Home from './components/Home'
+import Profile from './components/Profile'
 import ESlip from './components/ESlip'
 import PinInput from './components/PinInput'
 import TransactionDetails from './components/TransactionDetails'
@@ -89,6 +90,12 @@ const Eye = ({ className }) => (
   </svg>
 )
 
+const User = ({ className }) => (
+  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+  </svg>
+)
+
 function IndexPage() {
   const [showTransfer, setShowTransfer] = useState(false)
   const [showHistory, setShowHistory] = useState(false)
@@ -170,8 +177,18 @@ function IndexPage() {
       {/* Header */}
       <div className="text-white px-6 py-8" style={{ backgroundColor: 'var(--color-web-green-600)' }}>
         <div className="max-w-md mx-auto">
-          <h1 className="text-2xl font-bold mb-1">PayWise</h1>
-          <p className="text-sm" style={{ color: 'var(--color-web-green-100)' }}>Fast, Simple & Secure P2P Transfers</p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold mb-1">PayWise</h1>
+              <p className="text-sm" style={{ color: 'var(--color-web-green-100)' }}>Fast, Simple & Secure P2P Transfers</p>
+            </div>
+            <Link 
+              to="/profile"
+              className="w-10 h-10 bg-white bg-opacity-20 rounded-full flex items-center justify-center hover:bg-opacity-30 transition-colors duration-200"
+            >
+              <User className="h-5 w-5 text-white" />
+            </Link>
+          </div>
         </div>
       </div>
 
@@ -362,6 +379,7 @@ function App() {
       <Route path="/" element={<RootLayout />}>
         <Route index element={<IndexPage />} />
         <Route path="home" element={<Home />} />
+        <Route path="profile" element={<Profile />} />
       </Route>
     </Routes>
   )
