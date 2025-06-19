@@ -1,187 +1,333 @@
+import { Routes, Route, Link } from 'react-router'
+import { useState } from 'react'
 import './App.css'
+import RootLayout from './components/RootLayout'
+import Home from './components/Home'
+import ESlip from './components/ESlip'
+import PinInput from './components/PinInput'
+import TransactionDetails from './components/TransactionDetails'
+import TransactionHistory from './components/TransactionHistory'
+import TransferModal from './components/TransferModal'
 
-function App() {
+// UI Components (adapted for React)
+function Card({ children, className = "" }) {
+  return <div className={`bg-white rounded-lg shadow-sm border ${className}`}>{children}</div>
+}
+
+function CardHeader({ children, className = "" }) {
+  return <div className={`p-6 pb-4 ${className}`}>{children}</div>
+}
+
+function CardTitle({ children, className = "" }) {
+  return <h3 className={`text-lg font-semibold ${className}`}>{children}</h3>
+}
+
+function CardContent({ children, className = "" }) {
+  return <div className={`p-6 pt-0 ${className}`}>{children}</div>
+}
+
+function Button({ children, onClick, variant = "default", size = "default", className = "", ...props }) {
+  const baseClasses = "inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none"
+  
+  const variants = {
+    default: "bg-primary text-primary-foreground hover:bg-primary/90",
+    outline: "border border-input hover:bg-accent hover:text-accent-foreground",
+    ghost: "hover:bg-accent hover:text-accent-foreground"
+  }
+  
+  const sizes = {
+    default: "h-10 py-2 px-4",
+    sm: "h-9 px-3 rounded-md"
+  }
+  
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
+    <button 
+      onClick={onClick}
+      className={`${baseClasses} ${variants[variant]} ${sizes[size]} ${className}`}
+      {...props}
+    >
+      {children}
+    </button>
+  )
+}
+
+// Icons (simple SVG replacements for lucide-react)
+const ArrowUpRight = ({ className }) => (
+  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 17L17 7M17 7H7M17 7V17" />
+  </svg>
+)
+
+const ArrowDownLeft = ({ className }) => (
+  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 7L7 17M7 17H17M7 17V7" />
+  </svg>
+)
+
+const Plus = ({ className }) => (
+  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+  </svg>
+)
+
+const History = ({ className }) => (
+  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+  </svg>
+)
+
+const CreditCard = ({ className }) => (
+  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+  </svg>
+)
+
+const Eye = ({ className }) => (
+  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+  </svg>
+)
+
+function IndexPage() {
+  const [showTransfer, setShowTransfer] = useState(false)
+  const [showHistory, setShowHistory] = useState(false)
+  const [selectedTransaction, setSelectedTransaction] = useState(null)
+  const [showESlip, setShowESlip] = useState(false)
+  const [eSlipTransaction, setESlipTransaction] = useState(null)
+
+  // Convert transactions to state
+  const [transactions, setTransactions] = useState([
+    {
+      id: "TXN001234567890",
+      type: "sent",
+      amount: 1250.0,
+      recipient: "Sarah Johnson",
+      payTag: "@sarah_j",
+      memo: "Lunch split",
+      date: "2024-01-15",
+      time: "14:30",
+      status: "completed",
+    },
+    {
+      id: "TXN001234567891",
+      type: "received",
+      amount: 500.0,
+      recipient: "Mike Chen",
+      payTag: "@mike_c",
+      memo: "Movie tickets",
+      date: "2024-01-14",
+      time: "19:45",
+      status: "completed",
+    },
+    {
+      id: "TXN001234567892",
+      type: "sent",
+      amount: 2000.0,
+      recipient: "Lisa Wong",
+      payTag: "@lisa_w",
+      memo: "Rent payment",
+      date: "2024-01-13",
+      time: "09:15",
+      status: "completed",
+    },
+  ])
+
+  const balance = 15750.5
+
+  const handleNewTransfer = (transfer) => {
+    const newTransaction = {
+      ...transfer,
+      id: `TXN${Date.now()}`,
+      date: new Date().toISOString().split("T")[0],
+      time: new Date().toLocaleTimeString("en-US", { hour12: false, hour: "2-digit", minute: "2-digit" }),
+      status: "completed",
+    }
+    setTransactions((prev) => [newTransaction, ...prev])
+    setShowTransfer(false)
+  }
+
+  const recentTransactions = transactions.slice(0, 3)
+
+  const handleTransactionClick = (transaction) => {
+    // Add null check
+    if (transaction && transaction.status) {
+      setSelectedTransaction(transaction)
+    }
+  }
+
+  const handleViewESlip = (transaction) => {
+    // Add null check
+    if (transaction && transaction.status) {
+      setESlipTransaction(transaction)
+      setShowESlip(true)
+      setSelectedTransaction(null) // Close transaction details modal
+    }
+  }
+
+  return (
+    <div className="min-h-screen" style={{ backgroundColor: '#f0fdf4' }}>
       {/* Header */}
-      <header className="bg-white dark:bg-gray-800 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-            <div className="flex items-center">
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                Hello Universe
-              </h1>
+      <div className="bg-emerald-600 text-white px-6 py-8">
+        <div className="max-w-md mx-auto">
+          <h1 className="text-2xl font-bold mb-1">PayWise</h1>
+          <p className="text-emerald-100 text-sm">Fast, Simple & Secure P2P Transfers</p>
+        </div>
+      </div>
+
+      <div className="max-w-md mx-auto px-4 -mt-4 space-y-4">
+        {/* Balance Card */}
+        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+          <div className="bg-emerald-500 text-white px-6 py-4">
+            <div className="flex items-center gap-2">
+              <CreditCard className="h-5 w-5" />
+              <span className="font-medium">Account Balance</span>
             </div>
-            <nav className="hidden md:flex space-x-8">
-              <a href="#" className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                Home
-              </a>
-              <a href="#" className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                Features
-              </a>
-              <a href="#" className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                About
-              </a>
-              <a href="#" className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                Contact
-              </a>
-            </nav>
-            <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
-              Get Started
+          </div>
+          <div className="px-6 py-6">
+            <div className="text-3xl font-bold text-gray-900 mb-6">
+              ฿{balance.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+            </div>
+            <div className="flex gap-3">
+              <Button 
+                onClick={() => setShowTransfer(true)} 
+                className="bg-emerald-500 hover:bg-emerald-600 text-white flex-1 h-12 rounded-lg font-medium"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Send Money
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => setShowHistory(true)}
+                className="border-2 border-emerald-500 text-emerald-600 hover:bg-emerald-50 flex-1 h-12 rounded-lg font-medium"
+              >
+                <History className="h-4 w-4 mr-2" />
+                View History
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        {/* Quick Actions */}
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
+          <div className="grid grid-cols-2 gap-4">
+            <button
+              className="flex flex-col items-center gap-3 p-6 border-2 border-gray-200 rounded-lg hover:border-emerald-300 hover:bg-emerald-50 transition-colors"
+              onClick={() => setShowTransfer(true)}
+            >
+              <ArrowUpRight className="h-8 w-8 text-emerald-600" />
+              <span className="text-sm font-medium text-gray-700">Send Money</span>
+            </button>
+            <button
+              className="flex flex-col items-center gap-3 p-6 border-2 border-gray-200 rounded-lg hover:border-emerald-300 hover:bg-emerald-50 transition-colors"
+              onClick={() => setShowHistory(true)}
+            >
+              <Eye className="h-8 w-8 text-emerald-600" />
+              <span className="text-sm font-medium text-gray-700">Transaction History</span>
             </button>
           </div>
         </div>
-      </header>
 
-      {/* Hero Section */}
-      <main>
-        <section className="py-20 px-4 sm:px-6 lg:px-8">
-          <div className="max-w-7xl mx-auto text-center">
-            <h1 className="text-5xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6">
-              Welcome to
-              <span className="gradient-text">
-                {" "}Hello Universe
-              </span>
-            </h1>
-            <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto">
-              Experience the future of digital payments with our cutting-edge React and Vite-powered platform. 
-              Fast, secure, and beautifully designed with Tailwind CSS.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="btn-primary px-8 py-3 text-lg font-semibold transform hover:scale-105">
-                Start Now
-              </button>
-              <button className="btn-secondary px-8 py-3 text-lg font-semibold">
-                Learn More
-              </button>
-            </div>
+        {/* Recent Transactions */}
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-gray-900">Recent Transactions</h3>
+            <button
+              onClick={() => setShowHistory(true)}
+              className="text-emerald-600 text-sm font-medium hover:text-emerald-700"
+            >
+              View All
+            </button>
           </div>
-        </section>
-
-        {/* Features Section */}
-        <section className="py-20 bg-white dark:bg-gray-800">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-16">
-              <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
-                Why Choose Hello Universe?
-              </h2>
-              <p className="text-xl text-gray-600 dark:text-gray-300">
-                Built with modern technologies for the best user experience
-              </p>
-            </div>
-            
-            <div className="grid md:grid-cols-3 gap-8">
-              <div className="text-center p-6 rounded-lg bg-gray-50 dark:bg-gray-700 hover:shadow-lg transition-shadow">
-                <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-8 h-8 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                  </svg>
+          <div className="space-y-3">
+            {recentTransactions.map((transaction) => (
+              <div
+                key={transaction.id}
+                className="flex items-center justify-between p-4 rounded-lg border border-gray-100 hover:bg-gray-50 cursor-pointer transition-colors"
+                onClick={() => handleTransactionClick(transaction)}
+              >
+                <div className="flex items-center gap-3">
+                  <div
+                    className={`p-2 rounded-full ${
+                      transaction.type === "sent" 
+                        ? "bg-red-100" 
+                        : "bg-green-100"
+                    }`}
+                  >
+                    {transaction.type === "sent" ? (
+                      <ArrowUpRight className="h-4 w-4 text-red-600" />
+                    ) : (
+                      <ArrowDownLeft className="h-4 w-4 text-green-600" />
+                    )}
+                  </div>
+                  <div>
+                    <div className="font-medium text-gray-900">{transaction.recipient}</div>
+                    <div className="text-sm text-gray-500">{transaction.payTag}</div>
+                    {transaction.memo && <div className="text-xs text-gray-400">{transaction.memo}</div>}
+                  </div>
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                  Lightning Fast
-                </h3>
-                <p className="text-gray-600 dark:text-gray-300">
-                  Built with Vite for ultra-fast development and optimized performance
-                </p>
-              </div>
-
-              <div className="text-center p-6 rounded-lg bg-gray-50 dark:bg-gray-700 hover:shadow-lg transition-shadow">
-                <div className="w-16 h-16 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-8 h-8 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
+                <div className="text-right">
+                  <div
+                    className={`font-semibold ${
+                      transaction.type === "sent" ? "text-red-600" : "text-green-600"
+                    }`}
+                  >
+                    {transaction.type === "sent" ? "-" : "+"}฿
+                    {transaction.amount.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                  </div>
+                  <div className="text-xs text-gray-500">{transaction.date}</div>
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                  Modern React
-                </h3>
-                <p className="text-gray-600 dark:text-gray-300">
-                  Built with the latest React features and functional components
-                </p>
               </div>
-
-              <div className="text-center p-6 rounded-lg bg-gray-50 dark:bg-gray-700 hover:shadow-lg transition-shadow">
-                <div className="w-16 h-16 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-8 h-8 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM21 5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a4 4 0 004 4h4a2 2 0 002-2V5z" />
-                  </svg>
-                </div>
-                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                  Beautiful Design
-                </h3>
-                <p className="text-gray-600 dark:text-gray-300">
-                  Styled with Tailwind CSS for a modern and responsive design
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Stats Section */}
-        <section className="py-16 bg-blue-600 dark:bg-blue-700">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid md:grid-cols-4 gap-8 text-center">
-              <div>
-                <div className="text-4xl font-bold text-white mb-2">99.9%</div>
-                <div className="text-blue-100">Uptime</div>
-              </div>
-              <div>
-                <div className="text-4xl font-bold text-white mb-2">1M+</div>
-                <div className="text-blue-100">Users</div>
-              </div>
-              <div>
-                <div className="text-4xl font-bold text-white mb-2">24/7</div>
-                <div className="text-blue-100">Support</div>
-              </div>
-              <div>
-                <div className="text-4xl font-bold text-white mb-2">50+</div>
-                <div className="text-blue-100">Countries</div>
-              </div>
-            </div>
-          </div>
-        </section>
-      </main>
-
-      {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-4 gap-8">
-            <div>
-              <h3 className="text-xl font-bold mb-4">Hello Universe</h3>
-              <p className="text-gray-400">
-                The future of digital payments, built with modern web technologies.
-              </p>
-            </div>
-            <div>
-              <h4 className="text-lg font-semibold mb-4">Product</h4>
-              <ul className="space-y-2 text-gray-400">
-                <li><a href="#" className="hover:text-white transition-colors">Features</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Pricing</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Security</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-lg font-semibold mb-4">Company</h4>
-              <ul className="space-y-2 text-gray-400">
-                <li><a href="#" className="hover:text-white transition-colors">About</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Careers</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Contact</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-lg font-semibold mb-4">Support</h4>
-              <ul className="space-y-2 text-gray-400">
-                <li><a href="#" className="hover:text-white transition-colors">Help Center</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Documentation</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">API</a></li>
-              </ul>
-            </div>
-          </div>
-          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-            <p>&copy; 2025 Hello Universe. All rights reserved. Built with React + Vite + Tailwind CSS.</p>
+            ))}
           </div>
         </div>
-      </footer>
+      </div>
+
+      {/* Modal placeholders - These would need full modal components */}
+      <TransferModal
+        open={showTransfer}
+        onOpenChange={setShowTransfer}
+        onTransfer={handleNewTransfer}
+        currentBalance={balance}
+      />
+
+      {/* Use TransactionHistory component instead of basic modal */}
+      <TransactionHistory 
+        open={showHistory}
+        onOpenChange={setShowHistory}
+        transactions={transactions}
+        onSelectTransaction={(transaction) => {
+          setSelectedTransaction(transaction)
+          setShowHistory(false)
+        }}
+      />
+
+      {/* Use TransactionDetails component instead of basic modal */}
+      <TransactionDetails 
+        transaction={selectedTransaction}
+        open={!!selectedTransaction}
+        onOpenChange={(open) => !open && setSelectedTransaction(null)}
+      />
+
+      {/* ESlip Modal */}
+      <ESlip
+        transaction={eSlipTransaction}
+        open={showESlip}
+        onOpenChange={setShowESlip}
+      />
     </div>
+  )
+}
+
+function App() {
+  return (
+    <Routes>
+      <Route path="/" element={<RootLayout />}>
+        <Route index element={<IndexPage />} />
+        <Route path="home" element={<Home />} />
+      </Route>
+    </Routes>
   )
 }
 
